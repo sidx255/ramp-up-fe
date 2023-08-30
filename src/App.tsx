@@ -7,17 +7,17 @@ import { Home } from './pages/Home/index';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  // if (localStorage.getItem('email'))
-  //   setIsLoggedIn(true);
+  const [isLoggedIn, setIsLoggedIn] = React.useState<any>(localStorage.getItem('email') || null);
 
   return (
     <BrowserRouter>
       <html>
         <div className="App">
-          <Header loggedIn={isLoggedIn} />
+          <Header loggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
           <Routes>
-            <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn}/>} />
+            <Route path="/" element={
+              isLoggedIn ? <Home /> : <Login setIsLoggedIn={setIsLoggedIn}/>
+            }/>
             <Route path="/home" element={
               isLoggedIn ? <Home /> : <Login setIsLoggedIn={setIsLoggedIn}/>
             } />

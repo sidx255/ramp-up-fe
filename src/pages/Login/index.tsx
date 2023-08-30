@@ -118,7 +118,8 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
       localStorage.setItem('email', JSON.stringify(response.email));
       setIsLoggedIn(true);
       routeChange();
-      
+    } else {
+      toast.error('Invalid email or password');
     }
   };
 
