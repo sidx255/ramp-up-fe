@@ -22,6 +22,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen }) => {
     to: '',
     description: '',
     roomNo: '',
+    link: ''
   });
 
   const [users, setUsers] = useState([]);
@@ -90,7 +91,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen }) => {
                 />
               </svg>
             </button>
--            </div>
+          </div>
           <input
             type="text"
             placeholder="Organizer"
@@ -102,6 +103,13 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen }) => {
             placeholder="Event Name"
             value={formData.eventName}
             onChange={(e) => setFormData({ ...formData, eventName: e.target.value })}
+          />
+          <Select
+            isMulti
+            options={users.map((user: any) => ({ value: user.email, label: user.email }))}
+            value={formData.empNos.map((email: any) => ({ value: email, label: email })) || null}
+            onChange={handleEmpNosChange}
+            placeholder="Select guest(s)"
           />
           <DatePicker
             selected={formData.from}
@@ -134,12 +142,11 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen }) => {
             value={formData.roomNo}
             onChange={(e) => setFormData({ ...formData, roomNo: e.target.value })}
           />
-          <Select
-            isMulti
-            options={users.map((user: any) => ({ value: user.email, label: user.email }))}
-            value={formData.empNos.map((email: any) => ({ value: email, label: email })) || null}
-            onChange={handleEmpNosChange}
-            placeholder="Select employee email(s)"
+          <input
+            type="text"
+            placeholder="Link"
+            value={formData.link}
+            onChange={(e) => setFormData({ ...formData, link: e.target.value })}
           />
           <button type="submit" className="bg-blue-500 text-white px-4 py-2 mt-4"
             onClick={handleFormSubmit}

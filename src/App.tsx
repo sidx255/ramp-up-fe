@@ -1,9 +1,11 @@
 import React from 'react';
 import './App.css';
-// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Login } from './pages/Login';
 import { Header } from './components/Header';
 import { Home } from './pages/Home/index';
+import { Teams } from './pages/Teams/index';
+import { Rooms } from './pages/Rooms/index';
+
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -21,11 +23,16 @@ function App() {
             <Route path="/home" element={
               isLoggedIn ? <Home /> : <Login setIsLoggedIn={setIsLoggedIn}/>
             } />
+            <Route path="/teams" element={
+              isLoggedIn ? <Teams /> : <Login setIsLoggedIn={setIsLoggedIn}/>
+            } />
+            <Route path="/rooms" element={
+              isLoggedIn ? <Rooms /> : <Login setIsLoggedIn={setIsLoggedIn}/>
+            } />
           </Routes>
         </div>
       </html>
     </BrowserRouter>
-
   );
 }
 

@@ -12,7 +12,16 @@ const homeUri = {
   getAllUsers: `${BASE_URL}/allUsers`,
 };
 
+const teamsUri = {
+  getTeams: `${BASE_URL}/teams`,
+  createTeams: `${BASE_URL}/teams/create`,
+  addToTeam: `${BASE_URL}/team/*/addUser`,
+  removeFromTeam: `${BASE_URL}/team/*/removeUser`,
+  deleteTeam: `${BASE_URL}/team/*`
+};
+
 module.exports = {
   authUri,
   homeUri,
+  teamsUri
 };

@@ -25,6 +25,7 @@ export const Home = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    handleEvents();
   };
 
   const handleEvents = () => 
