@@ -15,7 +15,7 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ onClose, isOpen }) => {
   const [formData, setFormData] = useState<any>({
-    empNos: [''],
+    empNos: [],
     organizer: '',
     eventName: '',
     from: '',
@@ -26,24 +26,13 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen }) => {
   });
 
   const [users, setUsers] = useState([]);
-
-  const handleInputChange = (index: number, value: string) => {
-    const newEmpNos = [...formData.empNos];
-
-    newEmpNos[index] = value;
-    setFormData({
-      ...formData,
-      empNos: newEmpNos,
-    });
-  };
-
   const createRequest = async (
     formData: any
   )=>
   {
     makeRequest(homeUri.createEvent, 'POST', formData,
       {
-        authorization: localStorage.getItem('token') || 'null',
+        authorization: localStorage.getItem('token') || null,
       }).then(res => {
       return res;
     });
@@ -52,7 +41,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen }) => {
   useEffect(() => {
     makeRequest(homeUri.getAllUsers, 'GET', {},
       {
-        authorization: localStorage.getItem('token') || 'null',
+        authorization: localStorage.getItem('token') || null,
       }).then(res => {
       setUsers(res);
       return res;

@@ -62,7 +62,6 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
       },
     );
     setRegister(false);
-    console.log(response);
     return response;
   };
   

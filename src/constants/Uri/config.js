@@ -14,14 +14,21 @@ const homeUri = {
 
 const teamsUri = {
   getTeams: `${BASE_URL}/teams`,
+  getTeamEvents: `${BASE_URL}/events/team/*`,
   createTeams: `${BASE_URL}/teams/create`,
   addToTeam: `${BASE_URL}/team/*/addUser`,
   removeFromTeam: `${BASE_URL}/team/*/removeUser`,
   deleteTeam: `${BASE_URL}/team/*`
 };
 
+const roomsUri = {
+  getRooms: `${BASE_URL}/rooms/availability`,
+};
+
 module.exports = {
+  BASE_URL,
   authUri,
   homeUri,
-  teamsUri
+  teamsUri,
+  roomsUri
 };

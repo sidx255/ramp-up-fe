@@ -42,7 +42,6 @@ export const Home = () => {
         };
       }));
       
-      console.log('lol events', events);
     }).catch(err => {
       console.log(err);
     });
@@ -52,7 +51,6 @@ export const Home = () => {
     handleEvents();
   }
   , []);
-  console.log(events);
   return (
     <div>
       <button
