@@ -27,7 +27,7 @@ function App() {
               isLoggedIn ? <Teams /> : <Login setIsLoggedIn={setIsLoggedIn}/>
             } />
             <Route path="/rooms" element={
-              isLoggedIn ? <Rooms /> : <Login setIsLoggedIn={setIsLoggedIn}/>
+              isLoggedIn ? <Rooms showAll={true}/> : <Login setIsLoggedIn={setIsLoggedIn}/>
             } />
           </Routes>
         </div>

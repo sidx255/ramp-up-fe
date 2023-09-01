@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { homeUri } from '../../constants/Uri/config';
 import makeRequest from '../../utils/makeRequest';
 import DatePicker from 'react-datepicker';
-import TimePicker from 'react-time-picker';
 import Select from 'react-select';
 
 import 'react-datepicker/dist/react-datepicker.css';
@@ -11,20 +10,20 @@ import 'react-time-picker/dist/TimePicker.css';
 interface ModalProps {
   onClose: () => void;
   isOpen: boolean;
+  roomNo?: any;
 }
 
-const Modal: React.FC<ModalProps> = ({ onClose, isOpen }) => {
+const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo }) => {
   const [formData, setFormData] = useState<any>({
     empNos: [],
-    organizer: '',
+    organizer: JSON.parse(localStorage.getItem('email') || ''),
     eventName: '',
     from: '',
     to: '',
     description: '',
-    roomNo: '',
+    roomNo: roomNo,
     link: ''
   });
-
   const [users, setUsers] = useState([]);
   const createRequest = async (
     formData: any
@@ -128,7 +127,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen }) => {
           <input
             type="text"
             placeholder="Room No"
-            value={formData.roomNo}
+            value={roomNo}
             onChange={(e) => setFormData({ ...formData, roomNo: e.target.value })}
           />
           <input

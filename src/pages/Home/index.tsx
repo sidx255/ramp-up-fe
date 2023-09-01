@@ -5,6 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import makeRequest from '../../utils/makeRequest';
 import { homeUri } from '../../constants/Uri/config';
 import Modal from '../../components/EventModal';
+import { Rooms } from '../Rooms';
 
 function renderEventContent(eventInfo: { timeText: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; event: { title: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }; }) {
   return (
@@ -79,16 +80,20 @@ export const Home = () => {
           <div className='flex flex-col'>
             <span className='text-2xl'>Upcoming Events</span>
             <ul className='mt-2'>
-              {events.map((event: any, index) => (
-                <li key={index} className='mb-2'>
-                  <strong>{event.title}</strong><br />
-                  <span>{event.start.toLocaleString()}</span>
-                </li>
-              ))}
+              {events
+                .filter((event: any) => new Date(event.start) > new Date())
+                .map((event: any, index) => (
+                  <li key={index} className='mb-2'>
+                    <strong>{event.title}</strong><br />
+                    <span>{new Date(event.start).toLocaleString()}</span>
+                  </li>
+                ))}
+
             </ul>
           </div>
         </div>
       </div>
+      <Rooms showAll={false}/>
     </div>
   );
 };

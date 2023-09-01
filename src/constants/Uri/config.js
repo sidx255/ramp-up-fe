@@ -23,6 +23,7 @@ const teamsUri = {
 
 const roomsUri = {
   getRooms: `${BASE_URL}/rooms/availability`,
+  searchRooms: `${BASE_URL}/rooms`
 };
 
 module.exports = {
