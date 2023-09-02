@@ -6,6 +6,7 @@ import Select from 'react-select';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-time-picker/dist/TimePicker.css';
+import { toast, ToastContainer } from 'react-toastify';
 
 interface ModalProps {
   onClose: () => void;
@@ -79,9 +80,13 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
   };
 
   const handleFormSubmit = async () => {
-    await createOrUpdateEvent(formData);
-    onClose();
-    window.location.reload();
+    if (!(formData.empNos && formData.organizer && formData.eventName && formData.from && formData.to))
+      toast.error('Please fill all necessary details');
+    else {
+      await createOrUpdateEvent(formData);
+      onClose();
+      window.location.reload();
+    }
 
   };
 
@@ -106,26 +111,27 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
   }, []);
 
   return (
-    <div className={`modal ${isOpen ? 'flex' : 'hidden'}`}>
+    <div className={`modal ${isOpen ? 'flex' : 'hidden'} items-center justify-center fixed inset-0 z-1000`}>
       <div className="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
-      <div className="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
-        <div className="modal-content py-4 text-left px-6">
+      <div className="modal-container bg-white w-full md:max-w-screen-sm mx-auto rounded-lg shadow-lg z-50 overflow-hidden">
+        <div className="modal-content py-6 px-8">
           <div className="flex justify-between items-center pb-3">
-            <p className="text-2xl font-bold">{isUpdating ? 'Update Event' : 'Create Event'}</p>
-            <button onClick={onClose} className="modal-close cursor-pointer z-50">
+            <p className="text-2xl font-bold">
+              {isUpdating ? 'Update Event' : 'Create Event'}
+            </p>
+            <button
+              onClick={onClose}
+              className="modal-close cursor-pointer hover:text-gray-600"
+            >
               <svg
-                className="fill-current text-black"
+                className="fill-current text-black w-6 h-6"
                 xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 18 18"
+                viewBox="0 0 24 24"
               >
-
                 <path
                   className="heroicon-ui"
-                  d="M6.293 6.293a1 1 0 011.414 0L9 7.586l1.293-1.293a1 1 0 111.414 1.414L10.414 9l1.293 1.293a1 1 0 01-1.414 1.414L9 10.414l-1.293 1.293a1 1 0 01-1.414-1.414L7.586 9 6.293 7.707a1 1 0 010-1.414z"
+                  d="M6.293 6.293a1 1 0 011.414 0L12 10.586l4.293-4.293a1 1 0 111.414 1.414L13.414 12l4.293 4.293a1 1 0 01-1.414 1.414L12 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L10.586 12 6.293 7.707a1 1 0 010-1.414z"
                 />
-
               </svg>
             </button>
           </div>
@@ -157,6 +163,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
             timeIntervals={15}
             dateFormat="MMMM d, yyyy h:mm aa"
             className="w-full my-2"
+            placeholderText={'Start date and time'} 
           />
           <DatePicker
             selected={formData.to ? new Date(formData.to) : null}
@@ -167,6 +174,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
             timeIntervals={15}
             dateFormat="MMMM d, yyyy h:mm aa"
             className="w-full my-2"
+            placeholderText={'End date and time'} 
           />
           <input
             type="text"
@@ -186,22 +194,30 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
             value={formData.link}
             onChange={(e) => setFormData({ ...formData, link: e.target.value })}
           />
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 mt-4" onClick={handleFormSubmit}>
-            {isUpdating ? 'Update' : 'Create'}
-          </button>
-          {isUpdating && (
+          <div className="flex justify-between mt-6">
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 mt-4"
-              onClick={() => handleDeleteEvent(eventData)}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+              onClick={handleFormSubmit}
             >
-    Delete
+              {isUpdating ? 'Update' : 'Create'}
             </button>
-          )}
+            {isUpdating && (
+              <button
+                type="submit"
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
+                onClick={() => handleDeleteEvent(eventData)}
+              >
+              Delete
+              </button>
+            )}
+          </div>
         </div>
       </div>
+      <ToastContainer/>
     </div>
-  );
-};
+    // </div>
+  );};
 
 export default Modal;
+

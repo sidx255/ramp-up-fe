@@ -67,13 +67,6 @@ export const Home = () => {
     <div className="container mx-auto px-4">
       <div className="flex flex-col">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-semibold">Calendar</h1>
-          <button
-            onClick={openModal}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Create Event
-          </button>
           {/* Modal */}
           {isModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -89,9 +82,17 @@ export const Home = () => {
             </div>
           )}
         </div>
-
         <div className="flex">
           <div className="w-2/3 pr-4">
+            <div className='flex flex-row justify-between'>
+              <h1 className="text-2xl font-semibold">Calendar</h1>
+              <button
+                onClick={openModal}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+            Create Event
+              </button>
+            </div>
             <FullCalendar
               plugins={[dayGridPlugin]}
               initialView="dayGridMonth"
@@ -105,7 +106,7 @@ export const Home = () => {
             />
           </div>
           <div className="w-1/3">
-            <div className="text-2xl mb-2">Upcoming Events</div>
+            <h1 className="text-2xl font-semibold pb-3">Upcoming Events</h1>
             <ul>
               {events
                 .filter((event: any) => new Date(event.start) > new Date())

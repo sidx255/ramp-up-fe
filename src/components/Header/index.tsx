@@ -32,8 +32,8 @@ export const Header: React.FC<HeaderProps> = ({ loggedIn, setIsLoggedIn }) => {
   };
 
   return (
-    <div>
-      <div className='bg-gray-200 p-4 pl-4 pr-4 flex justify-between items-center'>
+    <div className='sticky'>
+      <div className='bg-gray-200 h-[60px] p-4 pl-4 pr-4 flex justify-between items-center'>
         <div className='font-bold text-2xl'>
           <span className=''>GetARoom</span>
         </div>

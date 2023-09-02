@@ -21,15 +21,14 @@ export const Teams = () => {
   const [teams, setTeams] = React.useState<any>([]);
   const [event, setEvent] = React.useState<any>('');
   const [users, setUsers] = React.useState<any>([]);
-  const [selectedTeam, setSelectedTeam] = React.useState<any>('');
+  const [selectedTeam, setSelectedTeam] = React.useState<any>(null);
   const [newMember, setNewMember] = React.useState<any>([]);
   const [isEventModalOpen, setIsEventModalOpen] = React.useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const openModal = (teamId: any) => {
-    setIsEventModalOpen(true);
     setSelectedTeam(teamId);
-  
+    setIsEventModalOpen(true);
   };
 
   const closeModal = () => {
@@ -147,10 +146,6 @@ export const Teams = () => {
     setNewMember(selectedEmpNos);
   };
 
-  console.log(newMember);
-  
-  
-
   return (
     <div className="p-4 container mx-auto space-y-4">
       <h1 className="text-3xl font-bold">Teams</h1>
@@ -175,7 +170,7 @@ export const Teams = () => {
                 <h3 className="text-xl font-semibold">{team.description}</h3>
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => openModal(team.id)}
+                    onClick={() => openModal(team)}
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
                   >
                   Create Event
