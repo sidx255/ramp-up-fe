@@ -99,6 +99,10 @@ export const Home = () => {
               contentHeight={500}
               handleWindowResize={true}
               eventContent={renderEventContent}
+              eventClick={event => {
+                setEvent(event.event.id);
+                openModal();
+              }}
             />
           </div>
           <div className="w-1/3">

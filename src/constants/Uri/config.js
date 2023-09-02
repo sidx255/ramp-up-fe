@@ -9,6 +9,7 @@ const homeUri = {
   myEvents: `${BASE_URL}/myEvents`,
   availableRooms: `${BASE_URL}/availableRooms`,
   createEvent: `${BASE_URL}/event`,
+  deleteEvent: `${BASE_URL}/event`,
   editEvent: `${BASE_URL}/event`,
   getAllUsers: `${BASE_URL}/allUsers`,
 };

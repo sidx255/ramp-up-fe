@@ -81,11 +81,22 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
   const handleFormSubmit = async () => {
     await createOrUpdateEvent(formData);
     onClose();
+    window.location.reload();
+
   };
 
   const handleEmpNosChange = (selectedOptions: any) => {
     const selectedEmpNos = selectedOptions.map((option: any) => option.value);
     setFormData({ ...formData, empNos: selectedEmpNos });
+  };
+
+  const handleDeleteEvent = async(id: any) => {
+    makeRequest(homeUri.deleteEvent+`/${id}`, 'DELETE', null, {
+      authorization: localStorage.getItem('token') || null,
+    }).then((res) => {
+      onClose();
+      window.location.reload();
+    });
   };
 
   useEffect(() => {
@@ -177,6 +188,15 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
           <button type="submit" className="bg-blue-500 text-white px-4 py-2 mt-4" onClick={handleFormSubmit}>
             {isUpdating ? 'Update' : 'Create'}
           </button>
+          {isUpdating && (
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 mt-4"
+              onClick={() => handleDeleteEvent(eventData)}
+            >
+    Delete
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -17,6 +17,7 @@ function renderEventContent(eventInfo: { timeText: string | number | boolean | R
 
 export const Teams = () => {
   const [teams, setTeams] = React.useState<any>([]);
+  const [event, setEvent] = React.useState<any>('');
   const [selectedTeam, setSelectedTeam] = React.useState<any>('');
   const [newMember, setNewMember] = React.useState('');
   const [isEventModalOpen, setIsEventModalOpen] = React.useState(false);
@@ -30,6 +31,7 @@ export const Teams = () => {
 
   const closeModal = () => {
     setIsEventModalOpen(false);
+    setEvent('');
   };
 
   React.useEffect(() => {
@@ -82,6 +84,7 @@ export const Teams = () => {
         authorization: localStorage.getItem('token')
       });
       const events = response.map((event: any) => ({
+        id: event.id,
         title: event.eventName,
         start: new Date(event.from)
       }));
@@ -153,9 +156,12 @@ export const Teams = () => {
                 <div className="fixed inset-0 flex items-center justify-center z-50">
                   <div className="absolute inset-0 bg-gray-800 opacity-75"></div>
                   <div className="relative z-50 bg-white p-4 rounded-lg">
-
-                    <Modal onClose={closeModal} isOpen={isEventModalOpen} team={selectedTeam} />
-                    
+                    {
+                      event ? 
+                        <Modal onClose={closeModal} isOpen={isEventModalOpen} eventData={event} team={selectedTeam}/>
+                        : 
+                        <Modal onClose={closeModal} isOpen={isEventModalOpen} team={selectedTeam}/>
+                    }
                   </div>
                 </div>
               )}
@@ -211,6 +217,10 @@ export const Teams = () => {
                     console.error('Error fetching team events:', error);
                     failureCallback(error);
                   }
+                }}
+                eventClick={(event : any) => {
+                  setEvent(event.event._def.publicId);
+                  setIsEventModalOpen(true);
                 }}
               />
 
