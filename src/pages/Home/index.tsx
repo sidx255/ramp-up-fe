@@ -96,7 +96,6 @@ export const Home = () => {
               plugins={[dayGridPlugin]}
               initialView="dayGridMonth"
               events={events}
-              contentHeight={500}
               handleWindowResize={true}
               eventContent={renderEventContent}
               eventClick={event => {
@@ -133,9 +132,6 @@ export const Home = () => {
         <div className="mt-4">
           <Rooms showAll={false} />
         </div>
-
-        {/* Modal */}
-
       </div>
     </div>
   );

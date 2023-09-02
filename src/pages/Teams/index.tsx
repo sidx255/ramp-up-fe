@@ -1,10 +1,12 @@
 import React, {useState} from 'react';
-import { BASE_URL, teamsUri } from '../../constants/Uri/config';
+import { BASE_URL, teamsUri, homeUri } from '../../constants/Uri/config';
 import makeRequest from '../../utils/makeRequest';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import AddTeamModal from '../../components/AddTeamModal';
 import Modal from '../../components/EventModal';
+import Select from 'react-select';
+import { toast, ToastContainer } from 'react-toastify';
 
 function renderEventContent(eventInfo: { timeText: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; event: { title: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }; }) {
   return (
@@ -18,8 +20,9 @@ function renderEventContent(eventInfo: { timeText: string | number | boolean | R
 export const Teams = () => {
   const [teams, setTeams] = React.useState<any>([]);
   const [event, setEvent] = React.useState<any>('');
+  const [users, setUsers] = React.useState<any>([]);
   const [selectedTeam, setSelectedTeam] = React.useState<any>('');
-  const [newMember, setNewMember] = React.useState('');
+  const [newMember, setNewMember] = React.useState<any>([]);
   const [isEventModalOpen, setIsEventModalOpen] = React.useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
@@ -32,9 +35,14 @@ export const Teams = () => {
   const closeModal = () => {
     setIsEventModalOpen(false);
     setEvent('');
-  };
+  }; 
 
   React.useEffect(() => {
+    makeRequest(homeUri.getAllUsers, 'GET', {}, {
+      authorization: localStorage.getItem('token') || null,
+    }).then(res => {
+      setUsers(res);
+    });
     makeRequest(teamsUri.getTeams, 'GET', null, {
       authorization: localStorage.getItem('token') || null
     })
@@ -116,42 +124,70 @@ export const Teams = () => {
         window.location.reload();
       });
   };
-  
-  return (
-    <div>
-      <div className='flex flex-col space-y-2'>
-        <h1 className="text-3xl font-bold mb-4">Teams</h1>
-        <button
-          className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
-          onClick={openAddModal}
-        >
-        Add Team
-        </button>
 
-        <AddTeamModal
-          isOpen={isAddModalOpen}
-          onClose={closeAddModal}
-          onSubmit={handleAddTeam}
-        />
-      </div>
+  const handleEmpOptions = (teamId: any) =>
+  {
+    const availableUsers = getAvailableUsers(teamId);
+    return availableUsers.map((user: any) => ({
+      value: user.email,
+      label: `${user.name} <${user.email}>`,
+    }));
+  };
+
+  const getAvailableUsers = (selectedTeam: any) => {
+    if (selectedTeam) {
+      const existingEmpNos = teams.find((team: any) => team.id === selectedTeam)?.empNos || [];
+      return users.filter((user: any) => !existingEmpNos.includes(user.email));
+    }
+    return users;
+  };
+
+  const handleEmpNosChange = (selectedOptions: any) => {
+    const selectedEmpNos = selectedOptions;
+    setNewMember(selectedEmpNos);
+  };
+
+  console.log(newMember);
+  
+  
+
+  return (
+    <div className="p-4 container mx-auto space-y-4">
+      <h1 className="text-3xl font-bold">Teams</h1>
+      <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        onClick={openAddModal}
+      >
+        Add Team
+      </button>
+
+      <AddTeamModal
+        isOpen={isAddModalOpen}
+        onClose={closeAddModal}
+        onSubmit={handleAddTeam}
+      />
 
       <div>
         <ul>
-          {teams.map((team: any) => (
-            <div key={team.id}>
-              <h3>{team.description}</h3>
-              <button
-                className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'
-                onClick={() => handleTeamDelete(team.id)}
-              >
-                Delete
-              </button>
-              <button
-                onClick={() => openModal(team)}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-        Create Event
-              </button>
+          {teams.map((team:any) => (
+            <div key={team.id} className="bg-white p-4 shadow rounded-lg">
+              <div className='flex flex-row justify-between'>
+                <h3 className="text-xl font-semibold">{team.description}</h3>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => openModal(team.id)}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                  >
+                  Create Event
+                  </button>
+                  <button
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                    onClick={() => handleTeamDelete(team.id)}
+                  >
+                  Delete Team
+                  </button>
+                </div>
+              </div>
               {isEventModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center z-50">
                   <div className="absolute inset-0 bg-gray-800 opacity-75"></div>
@@ -190,19 +226,30 @@ export const Teams = () => {
  
                   </div>
                 ))}
-                <input
-                  type="text"
-                  placeholder="Enter Employee No"
-                  className="border rounded py-1 px-2 mr-2"
-                  onChange={(e) => setNewMember(e.target.value)}
-                  value={newMember}
-                />
-                <button
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
-                  onClick={() => handleAddMember(team.id, newMember)}
-                >
+                <div className='flex w-full'>
+                  <div className='flex w-1/3'>
+                    <Select className='w-full'
+                      options={handleEmpOptions(team.id)}
+                      value={newMember}
+                      onChange={handleEmpNosChange}
+                      placeholder="Select member(s)"
+
+                    />
+                  </div>
+                  
+                  <button
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
+                    onClick={() => {
+                      if (!newMember.value) {
+                        toast.error('Please select a member');
+                      } else
+                    
+                        handleAddMember(team.id, newMember.value);}
+                    }
+                  >
         Add
-                </button>
+                  </button>
+                </div>
               </ul>
 
               <FullCalendar
@@ -228,6 +275,7 @@ export const Teams = () => {
           ))}
         </ul>
       </div>
+      <ToastContainer/>
     </div>
 
   );

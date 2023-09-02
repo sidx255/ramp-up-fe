@@ -88,6 +88,9 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
         setRegister(false);
         toast.success('Successfully registered! You can now log in.');
       }
+      else {
+        toast.error('Please fill all the fields');
+      }
     }
     ).catch((error) => {
       console.log(error);
@@ -100,7 +103,7 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
       alert('Passwords do not match');
       return;
     }
-    await RegisterRequest(
+    return await RegisterRequest(
       email,
       password,
       empNo,
@@ -148,7 +151,11 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                   onClick={loginHandler}
                 >Sign in</button>
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                  <button type='submit' className="font-medium text-primary-600 hover:underline dark:text-primary-500" onClick={() => setRegister(true)}>Don`t have an account yet? </button>
+                  <button type='submit' className="font-medium text-primary-600 hover:underline dark:text-primary-500" onClick={() => {
+                    // setPassword('');
+                    // setEmail('');
+                    setRegister(true);
+                  }}>Don`t have an account yet? </button>
                 </p>
               </div>
             </div>
@@ -160,18 +167,33 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
             <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
               <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                 <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                  Create and account
+                  Create an account
                 </h1>
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Employee No</label>
-                  <input type="empno" name="empno" id="empno" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="123456789" 
-                    onChange={handleEmpNoChange}
-                  />
-                </div>
                 <div>
                   <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
                   <input type="email" name="email" id="email" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" 
                     onChange={handleEmailChange}
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                  <input type="password" name="password" id="password" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                    onChange={handlePasswordChange}
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
+                  <input type="password" name="confirmpassword" id="confirmpassword" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                    onChange={handleConfirmPasswordChange}
+                  />
+                </div>
+                <h2 className="text-m font-bold leading-tight tracking-tight text-gray-900 md:text-xl dark:text-white">
+                  Work Details
+                </h2>
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Employee No</label>
+                  <input type="empno" name="empno" id="empno" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="123456789" 
+                    onChange={handleEmpNoChange}
                   />
                 </div>
                 <div>
@@ -192,18 +214,6 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                     onChange={handleContactChange}
                   />
                 </div>
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                  <input type="password" name="password" id="password" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                    onChange={handlePasswordChange}
-                  />
-                </div>
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
-                  <input type="password" name="confirmpassword" id="confirmpassword" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                    onChange={handleConfirmPasswordChange}
-                  />
-                </div>
                 <div className="flex items-start">
                   <div className="flex items-center h-5">
                     <input id="terms" aria-describedby="terms" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" />
@@ -216,7 +226,17 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
                   onClick={registerHandler}
                 >Sign up</button>
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                   Already have an account? <button type="submit" className="font-medium text-primary-600 hover:underline dark:text-primary-500" onClick={() => setRegister(false)}>Login here</button>
+                   Already have an account? <button type="submit" className="font-medium text-primary-600 hover:underline dark:text-primary-500" onClick={() => {
+                    // setEmpNo('');
+                    // setName('');
+                    // setRole('');
+                    // setContact('');
+                    // setEmail('');
+                    // setPassword('');
+                    // setConfirmPassword('');
+                    setRegister(false);
+                    window.location.reload();
+                  }}>Login here</button>
                 </p>
               </div>
             </div>

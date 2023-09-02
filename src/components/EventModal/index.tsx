@@ -151,6 +151,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
           <DatePicker
             selected={formData.from ? new Date(formData.from) : null}
             onChange={(date: any) => setFormData({ ...formData, from: date })}
+            minDate={new Date()}
             showTimeSelect
             timeFormat="HH:mm"
             timeIntervals={15}
