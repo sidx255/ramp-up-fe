@@ -17,6 +17,7 @@ function renderEventContent(eventInfo: { timeText: string | number | boolean | R
 }
 
 export const Home = () => {
+  const [event, setEvent] = React.useState('');
   const [events, setEvents] = React.useState([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
@@ -24,10 +25,15 @@ export const Home = () => {
     setIsModalOpen(true);
   };
 
+  React.useEffect(() => {
+    handleEvents();
+  }, []);
+
   const closeModal = () => {
     setIsModalOpen(false);
-    handleEvents();
+    setEvent(''); 
   };
+  
 
   const handleEvents = () => 
   {
@@ -38,8 +44,17 @@ export const Home = () => {
     ).then(res => {
       setEvents(res.map((event: any) => {
         return {
+          id: event.id,
           title: event.eventName,
           start: new Date(event.from),
+          // empNos: event.empNos,
+          // organizer: event.oraganizer,
+          // eventName: event.eventName,
+          // from: event.from,
+          // to: event.to,
+          // description: event.description,
+          // roomNo: event.roomNo,
+          // link: event.roomNo
         };
       }));
       
@@ -48,25 +63,36 @@ export const Home = () => {
     });
   };
 
-  React.useEffect(() => {
-    handleEvents();
-  }
-  , []);
   return (
-    <div>
-      <button
-        onClick={openModal}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      >
-        Create Event
-      </button>
-      <div className='overlay z-10'>
-        <Modal onClose={closeModal} isOpen={isModalOpen}/>
-      </div>
-      <div className='flex flex-col w-full'>
-        <div className='flex flex-row h-full'>
-          <div className='flex w-4/6'>
-            {events && <FullCalendar
+    <div className="container mx-auto px-4">
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-semibold">Calendar</h1>
+          <button
+            onClick={openModal}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Create Event
+          </button>
+          {/* Modal */}
+          {isModalOpen && (
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div className="absolute inset-0 bg-gray-800 opacity-75"></div>
+              <div className="relative z-50 bg-white p-4 rounded-lg">
+                {
+                  event ? 
+                    <Modal onClose={closeModal} isOpen={isModalOpen} eventData={event} />
+                    : 
+                    <Modal onClose={closeModal} isOpen={isModalOpen} />
+                }
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex">
+          <div className="w-2/3 pr-4">
+            <FullCalendar
               plugins={[dayGridPlugin]}
               initialView="dayGridMonth"
               events={events}
@@ -74,26 +100,39 @@ export const Home = () => {
               handleWindowResize={true}
               eventContent={renderEventContent}
             />
-            
-            }
           </div>
-          <div className='flex flex-col'>
-            <span className='text-2xl'>Upcoming Events</span>
-            <ul className='mt-2'>
+          <div className="w-1/3">
+            <div className="text-2xl mb-2">Upcoming Events</div>
+            <ul>
               {events
                 .filter((event: any) => new Date(event.start) > new Date())
                 .map((event: any, index) => (
-                  <li key={index} className='mb-2'>
-                    <strong>{event.title}</strong><br />
+                  <li key={index} className="mb-2">
+                    <strong>{event.title}</strong>
+                    <br />
                     <span>{new Date(event.start).toLocaleString()}</span>
+                    <button
+                      className="text-red-500"
+                      onClick={() => {
+                        setEvent(event.id);
+                        openModal();
+                      }}
+                    >
+                      Edit event
+                    </button>
                   </li>
                 ))}
-
             </ul>
           </div>
         </div>
+
+        <div className="mt-4">
+          <Rooms showAll={false} />
+        </div>
+
+        {/* Modal */}
+
       </div>
-      <Rooms showAll={false}/>
     </div>
   );
 };

@@ -3,7 +3,9 @@ import makeRequest from '../../utils/makeRequest';
 import { roomsUri } from '../../constants/Uri/config';
 import RoomModal from '../../components/EventModal';
 import DatePicker from 'react-datepicker';
+import listPlugin from '@fullcalendar/list';
 import img from '../../assets/meeting.jpg';
+import FullCalendar from '@fullcalendar/react';
 
 interface RoomProps {
   showAll: boolean;
@@ -44,16 +46,26 @@ export const Rooms: React.FC<RoomProps> = ({ showAll }) => {
       from: fromDate,
       to: toDate
     }).then((res) => {
-      setSearchResults(res); 
+      setSearchResults(res);
       const availableRooms = rooms.filter((room: any) => {
         const roomNo = room.roomNo;
-        const isAvailable = res.every((availableRoomNo: any) => availableRoomNo !== roomNo);
+        const isAvailable = res.every((availableRoomNo: any) => availableRoomNo.roomNo !== roomNo);
         return isAvailable;
       });
   
       setUnavailableRooms(availableRooms);
     });
   };
+
+  // const filterPassedTime = () => {
+  //   return fromDate.getTime() <= toDate.getTime();
+  // };
+
+  // handleRoomEvents = (room: any) => {
+  //   const events = response.map((event: any) => ({
+  //     title: event.eventName,
+  //     start: new Date(event.from)
+  //   }));
 
   return (
     <div className="p-8">
@@ -81,6 +93,7 @@ export const Rooms: React.FC<RoomProps> = ({ showAll }) => {
               timeIntervals={15}
               dateFormat="MMMM d, yyyy h:mm aa"
               className="w-full my-2"
+              // filterTime={filterPassedTime}
             />
             <button
               onClick={handleSearch}
@@ -103,16 +116,30 @@ export const Rooms: React.FC<RoomProps> = ({ showAll }) => {
             {searchResults.map((room: any) => (
               <div key={room.id} className="w-1/3 p-4">
                 <div className="bg-white shadow-md rounded-lg p-4 cursor-pointer hover:bg-gray-100" 
-                  onClick={() => handleRoomSelect(room)}
+                  onClick={() => handleRoomSelect(room.roomNo)}
                 >
                   <img
                     src={img}
-                    alt={`Room ${room}`}
+                    alt={`Room ${room.roomNo}`}
                     className="w-full h-40 object-cover rounded"
                   />
                   <div className="mt-2">
-                    <h3 className="text-lg font-semibold">{`Room ${room}`}</h3>
-                    <p className="text-gray-500">{`Available until: ${room.availabilityUntil}`}</p>
+                    <h3 className="text-lg font-semibold">{`Room ${room.roomNo}`}</h3>
+                    <FullCalendar
+                      plugins={[ listPlugin ]}
+                      initialView="listDay"
+                      headerToolbar={{
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'listDay'
+                      }}
+                      displayEventTime
+                      events={ room.occupancy.map((occupancy: any) => ({
+                        title: occupancy.eventName,
+                        date: occupancy.from
+                      }) )
+                      }
+                    />
                   </div>
                 </div>
               </div>
@@ -132,7 +159,23 @@ export const Rooms: React.FC<RoomProps> = ({ showAll }) => {
                       />
                       <div className="mt-2">
                         <h3 className="text-lg font-semibold">{`Room ${room.roomNo}`}</h3>
-                        <p className="text-gray-500">{`Available from: ${room}`}</p>
+                        <FullCalendar
+                          plugins={[ listPlugin ]}
+                          initialView="listDay"
+                          headerToolbar={{
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'listDay'
+                          }}
+                          displayEventTime
+                          initialDate={fromDate}
+                          events={ room.occupancy.map((occupancy: any) => ({
+                            title: occupancy.eventName,
+                            date: new Date(occupancy.from)
+                          }) )
+                          }
+                        />
+                        {/* <p className="text-gray-500">{`Available from: ${room}`}</p> */}
                       </div>
                     </div>
                   </div>

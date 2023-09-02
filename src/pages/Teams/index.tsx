@@ -4,6 +4,7 @@ import makeRequest from '../../utils/makeRequest';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import AddTeamModal from '../../components/AddTeamModal';
+import Modal from '../../components/EventModal';
 
 function renderEventContent(eventInfo: { timeText: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; event: { title: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }; }) {
   return (
@@ -16,7 +17,21 @@ function renderEventContent(eventInfo: { timeText: string | number | boolean | R
 
 export const Teams = () => {
   const [teams, setTeams] = React.useState<any>([]);
+  const [selectedTeam, setSelectedTeam] = React.useState<any>('');
   const [newMember, setNewMember] = React.useState('');
+  const [isEventModalOpen, setIsEventModalOpen] = React.useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const openModal = (teamId: any) => {
+    setIsEventModalOpen(true);
+    setSelectedTeam(teamId);
+  
+  };
+
+  const closeModal = () => {
+    setIsEventModalOpen(false);
+  };
+
   React.useEffect(() => {
     makeRequest(teamsUri.getTeams, 'GET', null, {
       authorization: localStorage.getItem('token') || null
@@ -26,7 +41,6 @@ export const Teams = () => {
       });
   }, []);
 
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const openAddModal = () => {
     setIsAddModalOpen(true);
@@ -103,7 +117,7 @@ export const Teams = () => {
   return (
     <div>
       <div className='flex flex-col space-y-2'>
-        <h2>Teams</h2>
+        <h1 className="text-3xl font-bold mb-4">Teams</h1>
         <button
           className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
           onClick={openAddModal}
@@ -129,6 +143,22 @@ export const Teams = () => {
               >
                 Delete
               </button>
+              <button
+                onClick={() => openModal(team)}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+        Create Event
+              </button>
+              {isEventModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                  <div className="absolute inset-0 bg-gray-800 opacity-75"></div>
+                  <div className="relative z-50 bg-white p-4 rounded-lg">
+
+                    <Modal onClose={closeModal} isOpen={isEventModalOpen} team={selectedTeam} />
+                    
+                  </div>
+                </div>
+              )}
               <ul>
                 {team.empNos.map((empNo: any) => (
                   <div key={empNo} className="flex items-center">
