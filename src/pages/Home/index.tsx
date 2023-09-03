@@ -1,5 +1,4 @@
 import React from 'react';
-// import { MonthCalendar } from '../../components/MonthCalendar';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import makeRequest from '../../utils/makeRequest';
@@ -20,6 +19,7 @@ export const Home = () => {
   const [event, setEvent] = React.useState('');
   const [events, setEvents] = React.useState([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -107,6 +107,16 @@ export const Home = () => {
           </div>
           <div className="w-1/3">
             <h1 className="text-2xl font-semibold pb-3">Upcoming Events</h1>
+        
+            <div className="mb-5">
+              <input
+                type="text"
+                placeholder="Search for event names..."
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
             <table className="table-auto w-full">
               <thead className='bg-gray-100'>
                 <tr>
@@ -118,7 +128,14 @@ export const Home = () => {
               </thead>
               <tbody>
                 {events
-                  .filter((event: any) => new Date(event.start) > new Date())
+                  .filter((event: any) => {
+                    const eventName = event.title.toLowerCase();
+                    const query = searchQuery.toLowerCase();
+                    return (
+                      new Date(event.start) > new Date() &&
+                (eventName.includes(query) || query === '')
+                    );
+                  })                  
                   .map((event: any, index) => (
                     <tr key={index} className="mb-2 hover:bg-gray-50"
                       onClick={() => {

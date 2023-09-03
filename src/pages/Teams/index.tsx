@@ -163,11 +163,11 @@ export const Teams = () => {
       />
 
       <div>
-        <ul>
+        <ul className='space-y-10'>
           {teams.map((team:any) => (
             <div key={team.id} className="bg-white p-4 shadow rounded-lg">
               <div className='flex flex-row justify-between'>
-                <h3 className="text-xl font-semibold">{team.description}</h3>
+                <h3 className="text-3xl font-semibold">{team.description}</h3>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => openModal(team)}
