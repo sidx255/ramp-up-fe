@@ -51,9 +51,9 @@ export const Home = () => {
           // organizer: event.oraganizer,
           // eventName: event.eventName,
           // from: event.from,
-          // to: event.to,
+          to: new Date(event.to),
           // description: event.description,
-          // roomNo: event.roomNo,
+          roomNo: event.roomNo,
           // link: event.roomNo
         };
       }));
@@ -107,33 +107,43 @@ export const Home = () => {
           </div>
           <div className="w-1/3">
             <h1 className="text-2xl font-semibold pb-3">Upcoming Events</h1>
-            <ul>
-              {events
-                .filter((event: any) => new Date(event.start) > new Date())
-                .map((event: any, index) => (
-                  <li key={index} className="mb-2">
-                    <strong>{event.title}</strong>
-                    <br />
-                    <span>{new Date(event.start).toLocaleString()}</span>
-                    <button
-                      className="text-red-500"
+            <table className="table-auto w-full">
+              <thead className='bg-gray-100'>
+                <tr>
+                  <th className="px-4 py-2">Event Name</th>
+                  <th className="px-4 py-2">From</th>
+                  <th className="px-4 py-2">To</th>
+                  <th className="px-4 py-2">Room No</th>
+                </tr>
+              </thead>
+              <tbody>
+                {events
+                  .filter((event: any) => new Date(event.start) > new Date())
+                  .map((event: any, index) => (
+                    <tr key={index} className="mb-2 hover:bg-gray-50"
                       onClick={() => {
                         setEvent(event.id);
                         openModal();
-                      }}
-                    >
-                      Edit event
-                    </button>
-                  </li>
-                ))}
-            </ul>
+                      }}>
+                      <td className="border px-4 py-2">{event.title}</td>
+                      <td className="border px-4 py-2">
+                        {new Date(event.start).toLocaleString()}
+                      </td>
+                      <td className="border px-4 py-2">
+                        {new Date(event.to).toLocaleString()}
+                      </td>
+                      <td className="border px-4 py-2">{event.roomNo}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
           </div>
         </div>
-
         <div className="mt-4">
           <Rooms showAll={false} />
         </div>
       </div>
     </div>
+
   );
 };

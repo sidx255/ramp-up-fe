@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BASE_URL, homeUri } from '../../constants/Uri/config';
+import { BASE_URL, homeUri, roomsUri } from '../../constants/Uri/config';
 import makeRequest from '../../utils/makeRequest';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
@@ -14,12 +14,16 @@ interface ModalProps {
   roomNo?: any;
   team?: any;
   eventData?: any; 
+  from?: any;
+  to?: any;
 }
 
-const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData }) => {
+const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo = null, team, eventData, from, to }) => {
   const isUpdating = eventData ? true : false; // Check if eventData is provided for updating
   const [users, setUsers] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState<any>({});
+  const [searchResults, setSearchResults] = useState<any>([]);
+  const [selectedRoom, setSelectedRoom] = useState<any>(roomNo);
   const [formData, setFormData] = useState<any>( isUpdating ? {
     empNos: selectedEvent.empNos,
     organizer: selectedEvent.organizer,
@@ -33,8 +37,8 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
     empNos: team ? [team.id] : [JSON.parse(localStorage.getItem('email') || '')],
     organizer: JSON.parse(localStorage.getItem('email') || ''),
     eventName: '',
-    from: '',
-    to: '',
+    from: from,
+    to: to,
     description: '',
     roomNo: roomNo,
     link: ''
@@ -46,12 +50,30 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
         authorization: localStorage.getItem('token') || null,
       });
       setSelectedEvent(res);
-      setFormData(res); // Set formData with selectedEvent data
+      setSelectedRoom(res.roomNo);
+      setFormData(res); 
     } catch (error) {
       console.error('Error fetching event details:', error);
     }
   };
 
+  const handleSearch = () => {
+    makeRequest(roomsUri.searchRooms, 'GET', null, {
+      authorization: localStorage.getItem('token') || null,
+    }, {
+      from: formData.from || from,
+      to: formData.to || to
+    }).then((res) => {
+      setSearchResults(res);
+    }).catch((error) => {
+      console.error('Error fetching search results:', error);
+    });
+  };
+
+  const handleRoomChange = (selectedOptions: any) => {
+    setFormData({ ...formData, roomNo: selectedOptions.value });  
+    setSelectedRoom(selectedOptions.value);
+  };
 
   useEffect(() => {
     if (isUpdating && eventData) {
@@ -63,6 +85,10 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
       setUsers(res);
     });
   }, [isUpdating, eventData]);
+
+  useEffect(() => {
+    if((formData.from || from)  && (formData.to || to)) handleSearch();
+  }, [formData.from, formData.to, from, to]);
 
   const createOrUpdateEvent = async (formData: any) => {
     const requestUri = isUpdating ? `${homeUri.editEvent}/${eventData}` : homeUri.createEvent;
@@ -83,11 +109,19 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
     if (!(formData.empNos && formData.organizer && formData.eventName && formData.from && formData.to))
       toast.error('Please fill all necessary details');
     else {
-      await createOrUpdateEvent(formData);
-      onClose();
-      window.location.reload();
+      createOrUpdateEvent(formData)
+        .then((res) => {
+          if(res.error){
+            toast.error('Room is already booked for this time slot');
+          } 
+          else {
+            onClose();
+            window.location.reload();
+          }
+        }).catch((error) => {
+          toast.error('Room is already booked for this time slot');
+        });
     }
-
   };
 
   const handleEmpNosChange = (selectedOptions: any) => {
@@ -155,7 +189,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
             placeholder="Select guest(s)"
           />
           <DatePicker
-            selected={formData.from ? new Date(formData.from) : null}
+            selected={(formData.from ? new Date(formData.from) : null) || from}
             onChange={(date: any) => setFormData({ ...formData, from: date })}
             minDate={new Date()}
             showTimeSelect
@@ -166,7 +200,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
             placeholderText={'Start date and time'} 
           />
           <DatePicker
-            selected={formData.to ? new Date(formData.to) : null}
+            selected={(formData.to ? new Date(formData.to) : null) || to}
             minDate={formData.from ? new Date(formData.from) : null}
             onChange={(date: any) => setFormData({ ...formData, to: date })}
             showTimeSelect
@@ -176,18 +210,22 @@ const Modal: React.FC<ModalProps> = ({ onClose, isOpen, roomNo, team, eventData 
             className="w-full my-2"
             placeholderText={'End date and time'} 
           />
-          <input
-            type="text"
-            placeholder="Description"
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          />
-          <input
-            type="text"
-            placeholder="Room No"
-            value={formData.roomNo || roomNo}
-            onChange={(e) => setFormData({ ...formData, roomNo: e.target.value })}
-          />
+          <div className='flex flow-row justify-center pb-2 gap-x-2'>
+            <input
+              type="text"
+              placeholder="Description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            />
+            <div className='w-[280px]'>
+              <Select
+                options={searchResults.map((roomNo: any) => ({ value: roomNo.roomNo, label: `${roomNo.roomNo}` })) || null }
+                value={{ value: selectedRoom, label: selectedRoom }}
+                onChange={handleRoomChange}
+                placeholder="Choose a room"
+              />
+            </div>
+          </div>
           <input
             type="text"
             placeholder="Link"
